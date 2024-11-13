@@ -38,7 +38,7 @@ The result of $$\text{atan2}(S, C)$$ will always be an angle in the interval $(-
 
 ## Definition of the $\text{atan2}$ Function
 
-The $ \text{atan2} $ function computes the principal argument of the complex number $ x + iy $, which is also the imaginary part of the complex logarithm. Specifically, the definition of $\text{atan2}(y, x)$ is:
+The $\text{atan2}$ function computes the principal argument of the complex number $x + iy$, which is also the imaginary part of the complex logarithm. Specifically, the definition of $\text{atan2}(y, x)$ is:
 
 $$
 \text{atan2}(y, x) = \arg(x + iy) = \text{Im} \log(x + iy)
