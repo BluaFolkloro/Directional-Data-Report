@@ -36,7 +36,7 @@ Where:
 
 The result of $$\text{atan2}(S, C)$$ will always be an angle in the interval $ (-\pi, \pi] $, ensuring a unique result and avoiding ambiguities due to the periodic nature of angles.
 
-## Definition of the $ \text{atan2} $ Function
+## Definition of the $\text{atan2}$ Function
 
 The $ \text{atan2} $ function computes the principal argument of the complex number $ x + iy $, which is also the imaginary part of the complex logarithm. Specifically, the definition of $ \text{atan2}(y, x) $ is:
 
