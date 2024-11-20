@@ -95,9 +95,9 @@ $$
 The key moments for the von Mises distribution are:
 
 1. **Mean Direction** ($\mu$): The central direction around which the data points are clustered.
-2. **Mean Resultant Length** ($\rho = A_1(\kappa)$): A measure of how tightly the data points are clustered around the mean direction. It ranges from 0 (uniform distribution) to 1 (all points at the mean direction).
+2. **Mean Resultant Length** ($\rho = A_1 (\kappa)$ ): A measure of how tightly the data points are clustered around the mean direction. It ranges from 0 (uniform distribution) to 1 (all points at the mean direction).
 3. **Circular Dispersion** ($\delta = \left[ \kappa A_1(\kappa) \right]^{-1}$): A measure of the spread or concentration of the data points.
-4. **Higher Moments** ($\alpha_p = A_p(\kappa)$): These moments are used to describe higher-order features of the distribution.
+4. **Higher Moments** ($\alpha_p = A_p(\kappa)$ ): These moments are used to describe higher-order features of the distribution.
 
 As $\kappa$ increases, the distribution becomes more concentrated around the mean direction $\mu$, and as $\kappa \to 0$, the distribution approaches a uniform distribution over the circle.
 
