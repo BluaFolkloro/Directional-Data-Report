@@ -67,6 +67,8 @@ The **von Mises distribution** is a symmetric unimodal distribution widely used 
 
 ![Probability density functions for the von Mises distribution, copied from Fisher's book, may be replaced by an image newly drawed.](von_mises.png)
 
+*Probability density functions for the von Mises distribution, copied from Fisher's book, may be replaced by an image newly drawed.*
+
 ## Probability Density Function (PDF)
 
 The probability density function (PDF) for the von Mises distribution is:
