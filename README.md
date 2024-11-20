@@ -65,7 +65,7 @@ $$
 
 The **von Mises distribution** is a symmetric unimodal distribution widely used for modeling circular data. It is commonly used when we have samples that exhibit a central tendency around a single mean direction.
 
-![Probability density functions for the von Mises distribution](images/von_mises.png)
+![Probability density functions for the von Mises distribution, copied from Fisher's book, may be replaced by an image newly drawed.](von_mises.png)
 
 ## Probability Density Function (PDF)
 
