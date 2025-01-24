@@ -1,7 +1,17 @@
+---
+title: "Directional Data notebook"
+output: html_notebook
+---
+
+```{R}
+if(!require(circular)) install.packages("circular")
+
+library(circular)
+```
+
 # Definition and Calculation of the Mean Direction
 
 In statistics, the **mean direction** refers to the central tendency of a set of directional data, commonly used for circular or angular data, such as wind direction or movement direction. Since directional data is periodic, meaning $0^\circ = 360^\circ$, the typical arithmetic mean does not apply to such data. Thus, the mean of directions is calculated using vector-based methods.
-
 
 ## Calculation of the Mean Direction
 
@@ -15,7 +25,9 @@ Next, the resultant vector's length $R$ is computed (and thus we have the mean r
 
 $$
 R^2 = C^2 + S^2 \quad \text{(where} \, R \geq 0 \text{)}
-$$ $$
+$$
+
+$$
 \cos \bar{\theta} = \frac{C}{R} \quad \sin \bar{\theta} = \frac{S}{R}
 $$
 
@@ -65,9 +77,43 @@ $$
 
 The **von Mises distribution** is a symmetric unimodal distribution widely used for modeling circular data. It is commonly used when we have samples that exhibit a central tendency around a single mean direction.
 
-![Probability density functions for the von Mises distribution, copied from Fisher's book, may be replaced by an image newly drawed.](von_mises.png)
+We will plot the density functions for the von Mises distribution with `R` package `circular`.
 
-*Probability density functions for the von Mises distribution, copied from Fisher's book, may be replaced by an image newly drawed.*
+```{R}
+mu <- circular(0) # Set the mean direction at o
+kappas <- c(0.5, 1, 2, 5)
+
+angles <- seq(0, 2*pi, length.out = 720)
+
+densities <- list() # To store the value of PDFs at each points
+for (kappa in kappas) {
+  density <- dvonmises(angles, mu = mu, kappa = kappa) # This should return a vector, since argument x is a vector 
+  densities[[as.character(kappa)]] <- density
+}
+
+# Plot
+png("von_mises_circular_plot.png", width = 2000, height = 2000, res = 300)
+plot.new()
+par(mar = c(1, 1, 1, 1))
+plot(circular(list()), zero = pi/2, bin = 720, shrink = 2.1)
+colors <- c("violet", "red", "blue", "green")
+for (i in seq_along(kappas)) {
+  lines.circular(angles, densities[[as.character(kappas[i])]] * 1.5 + 0.01, 
+                 col = colors[i], lwd = 2, zero = pi/2)
+}
+legend("topright", legend = paste("kappa =", kappas),
+       col = colors, lwd = 2, cex = 0.8)
+axis.circular(
+  at = circular(seq(0, 2 * pi - pi / 18, by = pi / 18)),
+  labels = rep("", 36),
+  tcl = 0.075,
+  zero = pi/2,
+  rotation = "clock"
+)
+dev.off()
+```
+
+![Figure 0.1](von_mises_circular_plot.png)
 
 ## Probability Density Function (PDF)
 
