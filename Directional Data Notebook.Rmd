@@ -148,3 +148,131 @@ As $\kappa$ increases, the distribution becomes more concentrated around the mea
 
 -   As $\kappa \to 0$, the von Mises distribution approaches the **uniform distribution** on the circle ($U_C$).
 -   As $\kappa \to \infty$, the von Mises distribution becomes a **point distribution** concentrated around the mean direction $\mu$.
+
+# Visualization
+
+## Raw Circular Data Plots
+
+The package `circular` contains a dataset `wind`, which stores the wind direction (for a total of 310 measures) recorded at Italian Alps. We aim to show how to plot a raw circular data using this dataset. And since `wind` is not a circular data object, this section will also include type conversion of standard data object.
+
+```{R}
+library(circular)
+windc <- circular(wind, type="angles",units="radians",template="geographics")
+
+png("raw_data_plot.png", width = 2000, height = 2000, res = 300)
+plot.new()
+plot(windc, stack=TRUE, col="black", shrink=1.3, cex=1.5, bin=720, sep=0.035,
+     main="Circular Plot of Wind Directions")
+dev.off()
+```
+
+![Figure 1.1](raw_data_plot.png)
+
+Each black dot corresponds to an individual wind direction measurement, plotted around the unit circle. The stacking of points at certain angles indicates repeated observations of the same wind direction, suggesting predominant wind patterns.
+
+For comparison, we plot the same data set linearly.
+
+```{R}
+plot(wind, pch=16, col="black",
+     xlab="Observation Number", 
+     ylab="Wind Direction (in radians)",
+     main="Linear Plot of Wind Directions")
+
+```
+
+A linear plot of circular data, such as wind directions, can be misleading because it does not account for the periodicity of the data. In a linear representation, angles close to **0 and 2π (or 360°)** appear far apart, even though they represent nearly the same direction. This can distort patterns and make it difficult to recognize cyclic trends. In the `wind` dataset, the circular plot clearly shows a peak concentration of wind directions around **0°**. However, in the linear plot, this same feature appears as two separate peaks at the uppermost and lowermost edges of the graph, which may lead to incorrect interpretations.
+
+### Plotting Multiple Datasets *(draft)*
+
+Here, `fisherB10` which contains 11 sets of the walking directions of ants is used to show a effective way to plot multiple datasets in a single figure.
+
+```{R}
+png("multi_data_plot.png", width = 2000, height = 2000, res = 300)
+plot.new()
+plot(fisherB10c$set1, units="degrees", zero=pi/2, rotation="clock", pch=16, cex=1.5)
+ticks.circular(circular(seq(0, (11/6)*pi, pi/6)), zero=pi/2, 
+               rotation="clock", tcl=0.075)
+points(fisherB10c$set2, zero=pi/2, rotation="clock", pch=16,
+       col="darkgrey", next.points=-0.1, cex=1.5)
+points(fisherB10c$set3, zero=pi/2, rotation="clock", pch=1, 
+       next.points=0.1, cex=1.5)
+
+dev.off()
+```
+
+![Figure 1.3](multi_data_plot.png)
+
+What is worth noting is that the data points are not stacking compared to Figure 1.1, this is because we used `bin = 720` and `stack = TURE` in Figure 1.1 but left it be default here. Under the setting of `bin` and `stack = TRUE`, all data points were mapped to fixed angle intervals, while they will be not if we leave it as `bin = NULL` and `stack = FALSE` as default. `next.points` is used to shift the points of different datasets onto different positions, to prevent them from being squeezed into a same circle.
+
+## Rose Diagrams (Circular Version of Histogram)
+
+A Rose Diagram is a circular histogram used to visualize directional or cyclic data. It is similar to a traditional histogram but adapted for angular measurements such as wind direction, animal migration paths, earthquake directions, etc. Each sector represents a specific direction, and its area or radius is proportional to the frequency of data points in that direction.
+
+```{R}
+png("rose.png", width = 2000, height = 2000, res = 300)
+plot.new()
+plot(windc, stack=TRUE, col="black", shrink=1.3, cex=1.5, bin=720, sep=0.035,
+     main="Circular Plot of Wind Directions with Rose Diagram")
+rose.diag(windc, bins=16, col="darkgrey", cex=1.5, prop=1.3, add=TRUE)
+dev.off()
+```
+
+![Figure 1.4](rose.png)
+
+The choice of amount of segments for the data to split into is worth considering. Too many segments may hide the details, while too few may lead to overfitting. The authors of *Circular Statistics in R* suggest that the square root of data size is often a reasonable first guess, and the values 4, 8, 12, 16, 18, 32 and 36 are popular choices.
+
+## Kernel Density Estimation *(draft)*
+
+Kernel Density Estimation (written as KDE here) is a non-parametric statistical method for estimating the PDF of a dataset. Unlike rose diagrams, KDE is not affected by the choice of bins and provides a smooth density curve, and provides a smooth density curve using continuous kernel functions.
+
+The KDE is given as
+
+$$
+\hat{f}(\theta) = \frac{1}{nh} \sum_{i=1}^{n} w\left(\frac{\theta - \theta_i}{h}\right)
+$$
+
+where $w(\theta)$ is a weight function, $n$ is data size, and $h$ controls how *smooth* the KDE is. A von Mises kernel is chosen as the default option of the weight function $w$ for the `density.circular` function in `circular` package, while wrapped normal kernel is available. Other types of kernels are not implemented in this package, but are still available for statistics practice.
+
+We continue to add a KDE onto our figure of `wind`, where `bw` works as $h$:
+
+```{R}
+png("KDE.png", width = 2000, height = 2000, res = 300)
+plot.new()
+plot(windc, stack=TRUE, col="black", shrink=1.8, cex=1.5, bin=720, sep=0.035,
+     main="Wind Directions with Rose Diagram and KDE")
+rose.diag(windc, bins=16, col="darkgrey", cex=1.5, prop=1.3, add=TRUE)
+lines(density.circular(windc, bw = 75), lwd = 2, lty = 2, col = "blue")  # too smooth
+lines(density.circular(windc, bw = 40), lwd = 2, lty = 1, col = "black")   # proper
+lines(density.circular(windc, bw = 10), lwd = 2, lty = 3, col = "red") # overfitting
+dev.off()
+```
+
+![Figure 1.5](KDE.png)
+
+## Linear Histogram *(I think it is unnecessary)*
+
+```{R}
+par(mfrow = c(1,2))
+
+hist(wind, main = " ", xlab = "Wind direction (radians)", ylab = "Frequency", 
+     breaks = seq(from = 0, to = 2 * pi, by = pi / 8), 
+     col = "grey", xlim = c(0, 2 * pi))
+
+n <- length(wind) 
+cutpoint <- 2 * pi - (5 * pi / 8) 
+windshift <- numeric(n)
+
+for (j in 1:n) { 
+  if (wind[j] >= cutpoint) { 
+    windshift[j] <- wind[j] - 2 * pi 
+  } else { 
+    windshift[j] <- wind[j] 
+  }
+}
+
+hist(windshift, main = "", xlab = "Wind direction (radians)", ylab = "Frequency", 
+  breaks = seq(from = -5 * pi / 8, to = 2 * pi - 5 * pi / 8, by = pi / 8), 
+  col = "grey", xlim = c(-5 * pi / 8, 2 * pi - 5 * pi / 8))
+
+par(mfrow = c(1, 1)) 
+```
