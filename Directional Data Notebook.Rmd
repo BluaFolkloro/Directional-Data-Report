@@ -1,6 +1,8 @@
 ---
 title: "Directional Data notebook"
-output: html_notebook
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
 ```{R}
@@ -10,6 +12,8 @@ library(circular)
 ```
 
 # Definition and Calculation of the Mean Direction
+
+*This section need to be integrated into "Summary Statistics" section*
 
 In statistics, the **mean direction** refers to the central tendency of a set of directional data, commonly used for circular or angular data, such as wind direction or movement direction. Since directional data is periodic, meaning $0^\circ = 360^\circ$, the typical arithmetic mean does not apply to such data. Thus, the mean of directions is calculated using vector-based methods.
 
@@ -33,12 +37,12 @@ $$
 
 Here, $$\bar{\theta}$$ represents the mean direction, which is the direction of the unit vector defined by $C$ and $S$. However, directly using $\cos \bar{\theta} = C/R$ and $\sin \bar{\theta} = S/R$ may lead to undefined results when $C = 0$ or $S = 0$. Therefore, a more robust approach is to use the **atan2** function to compute the mean direction.
 
-## Using the $\text{atan2}$ Function to Calculate the Mean Direction
+## Using the $\operatorname{atan2}$ Function to Calculate the Mean Direction
 
 The function **atan2** is a special arctangent function that takes into account both the values of $S$ and $C$, and it correctly handles the signs of these values to return the proper angle. Unlike the standard arctangent function $\text{atan}(y/x)$, $\text{atan2}(y, x)$ can handle boundary cases, such as when $C = 0$ or $S = 0$, without producing undefined results.
 
 $$
-\bar{\theta} = \text{atan2}(S, C)
+\bar{\theta} = \operatorname{atan2}(S, C)
 $$
 
 Where:
@@ -48,12 +52,12 @@ Where:
 
 The result of $$\text{atan2}(S, C)$$ will always be an angle in the interval $(-\pi, \pi]$, ensuring a unique result and avoiding ambiguities due to the periodic nature of angles.
 
-## Definition of the $\text{atan2}$ Function
+## Definition of the $\operatorname{atan2}$ Function
 
 The $\text{atan2}$ function computes the principal argument of the complex number $x + iy$, which is also the imaginary part of the complex logarithm. Specifically, the definition of $\text{atan2}(y, x)$ is:
 
 $$
-\text{atan2}(y, x) = \arg(x + iy) = \text{Im} \log(x + iy)
+\operatorname{atan2}(y, x) = \arg(x + iy) = \text{Im} \log(x + iy)
 $$
 
 -   $\text{atan2}(y, x)$ calculates the principal argument of the complex number $x + iy$, which is the imaginary part of its logarithm.
@@ -62,7 +66,7 @@ $$
 In terms of the standard arctangent function, whose image is $(-\frac{\pi}{2}, \frac{\pi}{2})$, $\text{atan2}$ can be expressed piecewise:
 
 $$
-\text{atan2}(y, x) =
+\operatorname{atan2}(y, x) =
 \begin{cases}
 \text{atan}(y/x) & \text{if} \, x > 0 \\
 \text{atan}(y/x) + \pi & \text{if} \, x < 0 \text{ and } y \geq 0 \\
@@ -276,3 +280,65 @@ hist(windshift, main = "", xlab = "Wind direction (radians)", ylab = "Frequency"
 
 par(mfrow = c(1, 1)) 
 ```
+
+# Summary Statistics
+
+On a **unit circle**, a circular data point can be express as a unit vector:
+
+$$
+x = (\cos\theta, \sin\theta)
+$$
+
+As well as complex form:
+
+$$
+z = e^{i\theta}=\cos\theta+i\sin\theta
+$$
+
+## Sample Trigonometric Moment
+
+For a circular dataset with size $n$, each data point corresponds to a unit vector $x_j$, an angle $\theta_j$, and a complex number $z_j=e^{i\theta_j}$.
+
+The $p$**-th trigonometric** moment is defined as
+
+$$
+t_{p,0} = \frac{1}{n} \sum_{j=1}^{n} z_j^p = \frac{1}{n} \sum_{j=1}^{n} e^{ip\theta_j} = \frac{1}{n} \sum_{j=1}^{n} (\cos p\theta_j + i \sin p\theta_j) = a_p + i b_p
+$$
+
+where
+
+$$
+a_p = \frac{1}{n} \sum_{j=1}^{n} \cos p\theta_j \quad 
+b_p = \frac{1}{n} \sum_{j=1}^{n} \sin p\theta_j
+$$ with $a_p=a_{-p}$, $b_p=b_{-p}$, $t_{0,0}=1$.
+
+It defines a vector in complex plane with length
+
+$$
+\bar{R}_p = \left( a_p^2 + b_p^2 \right)^{1/2} \in [0,1],
+$$
+
+and with direction
+
+$$
+\bar{\theta}_p = \operatorname{atan2}(b_p, a_p).
+$$
+
+### Sample Mean Direction and Sample mean resultant length
+
+Sample Mean resultant vector is the **1st trigonometric moment**.
+
+*Move the first section here!!*
+
+### $p$-th trigonometric about the mean direction
+
+$$
+t_{p,\bar{\theta}} = \frac{1}{n} \sum_{j=1}^{n} e^{i p (\theta_j - \bar{\theta})} = \frac{1}{n} \sum_{j=1}^{n} \left( \cos p (\theta_j - \bar{\theta}) + i \sin p (\theta_j - \bar{\theta}) \right) = \bar{a}_p + i \bar{b}_p,
+$$
+
+where
+
+$$
+\bar{a}_p = \frac{1}{n} \sum_{j=1}^{n} \cos p (\theta_j - \bar{\theta}), \quad
+\bar{b}_p = \frac{1}{n} \sum_{j=1}^{n} \sin p (\theta_j - \bar{\theta}).
+$$
