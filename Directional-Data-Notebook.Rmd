@@ -1,8 +1,13 @@
 ---
 title: "Directional Data notebook"
 output:
-  pdf_document: default
+  pdf_document: 
+    latex_engine: xelatex
   html_notebook: default
+  knitr:
+  opts_chunk:
+    warning: FALSE
+    message: FALSE
 ---
 
 ```{R}
@@ -117,7 +122,7 @@ axis.circular(
 dev.off()
 ```
 
-![Figure 0.1](von_mises_circular_plot.png)
+![Figure 0.1](von_mises_circular_plot.png){width="50%"}
 
 ## Probability Density Function (PDF)
 
@@ -170,7 +175,7 @@ plot(windc, stack=TRUE, col="black", shrink=1.3, cex=1.5, bin=720, sep=0.035,
 dev.off()
 ```
 
-![Figure 1.1](raw_data_plot.png)
+![Figure 1.1](raw_data_plot.png){width="50%"}
 
 Each black dot corresponds to an individual wind direction measurement, plotted around the unit circle. The stacking of points at certain angles indicates repeated observations of the same wind direction, suggesting predominant wind patterns.
 
@@ -204,7 +209,7 @@ points(fisherB10c$set3, zero=pi/2, rotation="clock", pch=1,
 dev.off()
 ```
 
-![Figure 1.3](multi_data_plot.png)
+![Figure 1.3](multi_data_plot.png){width="50%"}
 
 What is worth noting is that the data points are not stacking compared to Figure 1.1, this is because we used `bin = 720` and `stack = TURE` in Figure 1.1 but left it be default here. Under the setting of `bin` and `stack = TRUE`, all data points were mapped to fixed angle intervals, while they will be not if we leave it as `bin = NULL` and `stack = FALSE` as default. `next.points` is used to shift the points of different datasets onto different positions, to prevent them from being squeezed into a same circle.
 
@@ -221,7 +226,7 @@ rose.diag(windc, bins=16, col="darkgrey", cex=1.5, prop=1.3, add=TRUE)
 dev.off()
 ```
 
-![Figure 1.4](rose.png)
+![Figure 1.4](rose.png){width="50%"}
 
 The choice of amount of segments for the data to split into is worth considering. Too many segments may hide the details, while too few may lead to overfitting. The authors of *Circular Statistics in R* suggest that the square root of data size is often a reasonable first guess, and the values 4, 8, 12, 16, 18, 32 and 36 are popular choices.
 
@@ -251,7 +256,7 @@ lines(density.circular(windc, bw = 10), lwd = 2, lty = 3, col = "red") # overfit
 dev.off()
 ```
 
-![Figure 1.5](KDE.png)
+![Figure 1.5](KDE.png){width="50%"}
 
 ## Linear Histogram *(I think it is unnecessary)*
 
@@ -324,9 +329,30 @@ $$
 \bar{\theta}_p = \operatorname{atan2}(b_p, a_p).
 $$
 
-### Sample Mean Direction and Sample mean resultant length
+Package `circular` provides `trigonometric.moment` to calculate it:
 
-Sample Mean resultant vector is the **1st trigonometric moment**.
+```{r}
+fB11 <- c(fisherB11,8)
+fB11c <- circular(fB11, unit="degree", zero=circular(0), rotation="counter")
+trigonometric.moment(fB11c, p=2, center=TRUE)
+```
+
+## Measures of Location
+
+### Sample Mean Direction $\bar{\theta}$ and Sample mean resultant length $\bar{R}$
+
+Sample Mean resultant vector is the **1st trigonometric moment** $t_{1,0}$.
+
+When $\bar{R}>0$,
+
+$$
+\frac{1}{n} \sum_{j=1}^{n} \sin(\theta_j - \bar{\theta}) = 0, \quad
+\frac{1}{n} \sum_{j=1}^{n} \cos(\theta_j - \bar{\theta}) = \bar{R}.
+$$
+
+```{R}
+mean(fB11c)
+```
 
 *Move the first section here!!*
 
@@ -341,4 +367,120 @@ where
 $$
 \bar{a}_p = \frac{1}{n} \sum_{j=1}^{n} \cos p (\theta_j - \bar{\theta}), \quad
 \bar{b}_p = \frac{1}{n} \sum_{j=1}^{n} \sin p (\theta_j - \bar{\theta}).
+$$
+
+We can induct that
+
+$$
+\bar{a_1}=\bar{R}, \quad \bar{b_1}=0,
+$$
+
+and thus $t_{1,\bar{\theta}}=\bar{R}$.
+
+## Sample Median Direction
+
+The **Sample Median Direction** $\widetilde{\theta}$ is a robust alternative to the sample mean direction $\bar{\theta}$. It is defined as any angle $\psi$ where half of the data points lie in $\left[\psi,\psi+\pi\right)$ and most of them are closer to $\psi$ than to $\psi+\pi$.
+
+$\widetilde{\theta}$ can be obtain by minimizing the **dispersion measure**
+
+$$
+d_2(\psi) = \frac{1}{n} \sum_{j=1}^{n} \left\{ \pi - \left| \pi - \left| \theta_j - \psi \right| \right| \right\}.
+$$
+
+This approach is implemented in `circular` by the function `median.circular`.
+
+```{R}
+median.circular(fB11c)
+```
+
+## Measures of Concentration and Dispersion
+
+### Sample Circular Variance
+
+Sample Circular Variance is defined as
+
+$$
+V = 1 - \bar{R}
+$$
+
+where $\bar{R}$ is mean resultant length defined above. We can use `angular.variance` to calculate its value.
+
+### Standard Deviation
+
+Standard Deviation is defined by
+
+$$
+\hat{\sigma} = \{-2\log(1 - V)\}^{1/2} = \{-2\log \bar{R} \}^{1/2} \in [0, \infty],
+$$
+
+and can be computed using `sd.circular`.
+
+For concentrated samples with small $V$,
+
+$$
+\hat{\sigma} \approx (2V)^{1/2} = \{2(1 - \bar{R})\}^{1/2},
+$$
+
+which is what Batschelet(1981) defined as mean angular deviation. We can obtain it using `angular.deviation`.
+
+### Others
+
+Sample Circular Dispersion is defined as
+
+$$
+\hat{\delta} = \frac{1 - \bar{R}_2}{2\bar{R}^2}.
+$$
+
+Two commonly used measures of the distance between two angles $\psi$ and $\omega$:
+
+The first one depends on cosine:
+
+$$
+1 - \cos(\psi-\omega),
+$$
+
+with the associated measure of dispersion of the dataset $\theta_1,\dots,\theta_n$ about $\psi$,
+
+$$
+d_1(\psi) = \frac{1}{n} \sum_{j=1}^{n} \{1 - \cos(\theta_j - \psi)\}.
+$$
+
+Specifically, $\bar{d_1} = 1 - \bar{R}^2$.
+
+The second one is defined as
+
+$$
+\min(\psi - \omega, 2\pi - (\psi - \omega)) = \pi - |\pi - |\psi - \omega||,
+$$
+
+with the associated measure $d_2$ defined in the section *Sample Median Direction*.
+
+The mean distance between data points under this measure is
+
+$$
+\bar{d}_2 = \frac{1}{n^2} \sum_{j=1}^{n} \sum_{k=1}^{n} \{ \pi - |\pi - |\theta_j - \theta_k||| \} \in [0, \pi/2].
+$$
+
+## Skewness and Kurtosis
+
+Skewness describes the symmetry around the sample mean direction. It is defined as **the second sine moment**
+
+$$
+\bar{b}_2 = \frac{1}{n} \sum_{j=1}^{n} \sin 2(\theta_j - \bar{\theta}) = \bar{R}_2 \sin(\bar{\theta}_2 - 2\bar{\theta}),
+$$
+
+where $\bar{b}_2$ is the imaginary part of $\bar{t}_{2,\bar{\theta}}$. $\bar{b}_2$ will be close to $0$ if the data distribution is nearly symmetric about $\bar{\theta}$, and relatively large and negative (positive) when the distribution of the data is skewed counterclockwise (clockwise) away from the mean direction.
+
+Kurtosis describes how much the data points concentrate around the mean direction. It is defined as **the second cosine moment**
+
+$$
+\bar{a}_2 = \frac{1}{n} \sum_{j=1}^{n} \cos 2(\theta_j - \bar{\theta}) = \bar{R}_2 \cos(\bar{\theta}_2 - 2\bar{\theta}).
+$$
+
+$\bar{a}_2$ is the real part of $\bar{t}_{2,\bar{\theta}}$. Its value is $1$ when the data points are all identical, and close to $0$ if the data evenly distributed around the circle. That is, the larger $\bar{a}_2$ is, the more peaked the dataset is.
+
+Depends on $\bar{b}_2$ and $\bar{a}_2$, Mardia (1972) proposed normalized skewness and kurtosis:
+
+$$
+\hat{s} = \frac{\bar{b}_2}{(1 - \bar{R})^{3/2}}, \quad \hat{k} = \frac{\bar{a}_2 - \bar{R}^4}{1 - \bar{R}^2}.
 $$
