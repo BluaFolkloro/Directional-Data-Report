@@ -123,7 +123,7 @@ $$
 f(\theta) = \frac{1}{2\pi I_0(\kappa)} \exp\left( \kappa \cos(\theta - \mu) \right), \quad 0 \leq \theta < 2\pi, \quad 0 \leq \kappa < \infty
 $$
 
-Where: - $\mu$ is the **mean direction**, - $\kappa$ is the **concentration parameter**, which measures how tightly the data points cluster around the mean direction, - $I_0(\kappa)$ is the modified Bessel function of order zero, which normalizes the distribution.
+Where: $\mu$ is the **mean direction**, $\kappa$ is the **concentration parameter**, which measures how tightly the data points cluster around the mean direction, $I_0(\kappa)$ is the modified Bessel function of order zero, which normalizes the distribution.
 
 ## Cumulative Distribution Function (CDF)
 
