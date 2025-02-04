@@ -16,7 +16,7 @@ if(!require(circular)) install.packages("circular")
 library(circular)
 ```
 
-# Definition and Calculation of the Mean Direction
+# (Chapter 2) Definition and Calculation of the Mean Direction
 
 *This section need to be integrated into "Summary Statistics" section*
 
@@ -82,7 +82,7 @@ $$
 \end{cases}
 $$
 
-# The von Mises Distribution
+# （Chepter 3) The von Mises Distribution
 
 The **von Mises distribution** is a symmetric unimodal distribution widely used for modeling circular data. It is commonly used when we have samples that exhibit a central tendency around a single mean direction.
 
@@ -124,7 +124,7 @@ dev.off()
 
 ![Figure 0.1](von_mises_circular_plot.png){width="50%"}
 
-## Probability Density Function (PDF)
+## (First) Probability Density Function (PDF)
 
 The probability density function (PDF) for the von Mises distribution is:
 
@@ -158,7 +158,7 @@ As $\kappa$ increases, the distribution becomes more concentrated around the mea
 -   As $\kappa \to 0$, the von Mises distribution approaches the **uniform distribution** on the circle ($U_C$).
 -   As $\kappa \to \infty$, the von Mises distribution becomes a **point distribution** concentrated around the mean direction $\mu$.
 
-# Visualization
+# (Chepter 2) Visualization
 
 ## Raw Circular Data Plots
 
