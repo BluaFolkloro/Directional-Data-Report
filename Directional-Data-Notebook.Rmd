@@ -182,7 +182,7 @@ Each black dot corresponds to an individual wind direction measurement, plotted 
 For comparison, we plot the same data set linearly.
 
 ```{R}
-png("histo.png", width = 2000, height = 2000, res = 300)
+png("linear.png", width = 2000, height = 1400, res = 300)
 plot.new()
 plot(wind, pch=16, col="black",
      xlab="Observation Number", 
@@ -265,6 +265,8 @@ dev.off()
 ## Linear Histogram *(I think it is unnecessary)*
 
 ```{R}
+png("histo.png", width = 2000, height = 1000, res = 300)
+plot.new()
 par(mfrow = c(1,2))
 
 hist(wind, main = " ", xlab = "Wind direction (radians)", ylab = "Frequency", 
@@ -288,6 +290,7 @@ hist(windshift, main = "", xlab = "Wind direction (radians)", ylab = "Frequency"
   col = "grey", xlim = c(-5 * pi / 8, 2 * pi - 5 * pi / 8))
 
 par(mfrow = c(1, 1)) 
+dev.off()
 ```
 
 # Summary Statistics
