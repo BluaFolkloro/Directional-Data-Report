@@ -182,12 +182,16 @@ Each black dot corresponds to an individual wind direction measurement, plotted 
 For comparison, we plot the same data set linearly.
 
 ```{R}
+png("histo.png", width = 2000, height = 2000, res = 300)
+plot.new()
 plot(wind, pch=16, col="black",
      xlab="Observation Number", 
      ylab="Wind Direction (in radians)",
      main="Linear Plot of Wind Directions")
-
+dev.off()
 ```
+
+![Figure 1.3](histo.png){width="50%"}
 
 A linear plot of circular data, such as wind directions, can be misleading because it does not account for the periodicity of the data. In a linear representation, angles close to **0 and 2π (or 360°)** appear far apart, even though they represent nearly the same direction. This can distort patterns and make it difficult to recognize cyclic trends. In the `wind` dataset, the circular plot clearly shows a peak concentration of wind directions around **0°**. However, in the linear plot, this same feature appears as two separate peaks at the uppermost and lowermost edges of the graph, which may lead to incorrect interpretations.
 
@@ -251,7 +255,7 @@ plot(windc, stack=TRUE, col="black", shrink=1.8, cex=1.5, bin=720, sep=0.035,
      main="Wind Directions with Rose Diagram and KDE")
 rose.diag(windc, bins=16, col="darkgrey", cex=1.5, prop=1.3, add=TRUE)
 lines(density.circular(windc, bw = 75), lwd = 2, lty = 2, col = "blue")  # too smooth
-lines(density.circular(windc, bw = 40), lwd = 2, lty = 1, col = "black")   # proper
+lines(density.circular(windc, bw = 40), lwd = 2, lty = 1, col = "black")  # proper
 lines(density.circular(windc, bw = 10), lwd = 2, lty = 3, col = "red") # overfitting
 dev.off()
 ```
