@@ -491,3 +491,89 @@ Depends on $\bar{b}_2$ and $\bar{a}_2$, Mardia (1972) proposed normalized skewne
 $$
 \hat{s} = \frac{\bar{b}_2}{(1 - \bar{R})^{3/2}}, \quad \hat{k} = \frac{\bar{a}_2 - \bar{R}^4}{1 - \bar{R}^2}.
 $$
+
+```{r}
+
+mu <- circular(0) # Mean direction at 0
+
+# Set concentration parameters (rho values, between 0 and 1)
+rhos <- c(0.3, 0.5, 0.7)
+
+# Define angles from 0 to 2pi
+angles <- seq(0, 2 * pi, length.out = 720)
+
+# Store densities for different rho values
+densities <- list()
+for (rho in rhos) {
+  density <- dwrappedcauchy(angles, mu = mu, rho = rho) # Use dwrappedcauchy function
+  densities[[as.character(rho)]] <- density
+}
+
+# Plot
+png("wrapped_cauchy_plot.png", width = 2000, height = 2000, res = 300)
+plot.new()
+par(mar = c(1, 1, 1, 1))
+plot(circular(list()), zero = pi/2, bin = 720, shrink = 2.1, main = "Wrapped Cauchy Distribution")
+
+# Colors for the curves
+colors <- c("red", "blue", "green")
+
+# Add lines for each rho
+for (i in seq_along(rhos)) {
+  lines.circular(angles, densities[[as.character(rhos[i])]] * 1.5 + 0.01, 
+                 col = colors[i], lwd = 2, zero = pi/2)
+}
+
+# Add legend
+legend("topright", legend = paste("rho =", rhos),
+       col = colors, lwd = 2, cex = 0.8)
+
+# Add axis marks
+axis.circular(
+  at = circular(seq(0, 2 * pi - pi / 18, by = pi / 18)),
+  labels = rep("", 36),
+  tcl = 0.075,
+  zero = pi/2,
+  rotation = "clock"
+)
+
+dev.off()
+```
+
+```{r}
+mu <- circular(0)  # 平均方向
+sds <- c(0.5, 1, 2)  # 不同标准差的示例
+
+# 创建角度序列
+angles <- seq(0, 2 * pi, length.out = 720)
+
+# 存储不同标准差下的密度
+densities <- list()
+
+# 计算包裹正态分布的密度
+for (sd in sds) {
+  density <- dwrappednormal(angles, mu = mu, sd = sd, K = 50)  # K为逼近项数
+  densities[[as.character(sd)]] <- density
+}
+
+# 绘图
+png("wrapped_normal_plot.png", width = 2000, height = 2000, res = 300)
+plot.new()
+par(mar = c(1, 1, 1, 1))
+plot(circular(list()), zero = pi/2, bin = 720, shrink = 2.1)
+colors <- c("red", "blue", "green")
+for (i in seq_along(sds)) {
+  lines.circular(angles, densities[[as.character(sds[i])]] * 1.5 + 0.01,
+                 col = colors[i], lwd = 2, zero = pi/2)
+}
+legend("topright", legend = paste("sigma =", sds),
+       col = colors, lwd = 2, cex = 0.8)
+axis.circular(
+  at = circular(seq(0, 2 * pi - pi / 18, by = pi / 18)),
+  labels = rep("", 36),
+  tcl = 0.075,
+  zero = pi/2,
+  rotation = "clock"
+)
+dev.off()
+```
